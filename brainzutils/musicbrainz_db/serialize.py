@@ -97,6 +97,7 @@ def serialize_artists(artist, includes=None):
 
     if 'relationship_objs' in includes:
         serialize_relationships(data, artist, includes['relationship_objs'])
+
     return data
 
 
