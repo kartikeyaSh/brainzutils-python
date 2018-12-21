@@ -20,7 +20,7 @@ def get_artist_by_mbid(mbid, includes=None):
     if includes is None:
         includes = []
 
-    return get_many_artists_by_mbid([mbid], includes)
+    return get_many_artists_by_mbid([mbid], includes).get(mbid)
 
 
 def get_many_artists_by_mbid(mbids, includes=None):
@@ -38,7 +38,7 @@ def get_many_artists_by_mbid(mbids, includes=None):
     if includes is None:
         includes = []
 
-    return fetch_multiple_artists(
+    return _fetch_multiple_artists(
         mbids,
         includes=includes,
     )
@@ -88,6 +88,14 @@ def _fetch_multiple_artists(mbids, includes=None):
                 source_entity_ids=artist_ids,
                 includes_data=includes_data,
             )
+
+        if 'comment' in includes:
+            for artist in artists.values():
+                includes_data[artist.id]['comment'] = artist.comment
+
+        if 'type' in includes:
+            for artist in artists.values():
+                includes_data[artist.id]['type'] = artist.type
 
     artists = {str(mbid): serialize_artists(artists[mbid], includes_data[artists[mbid].id]) for mbid in mbids}
     return artists
