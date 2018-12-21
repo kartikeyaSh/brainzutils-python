@@ -92,11 +92,15 @@ def serialize_artists(artist, includes=None):
         'sort_name': artist.sort_name,
     }
 
-    if 'type' in includes and includes['type']:
-        data['type'] = includes['type'].name
+    if 'comment' in includes:
+        data['comment'] = artist.comment
+
+    if 'type' in includes:
+        data['type'] = artist.type.name
 
     if 'relationship_objs' in includes:
         serialize_relationships(data, artist, includes['relationship_objs'])
+
     return data
 
 

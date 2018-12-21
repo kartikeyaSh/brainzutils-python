@@ -10,25 +10,44 @@ from brainzutils.musicbrainz_db.helpers import get_relationship_info
 from brainzutils.musicbrainz_db import recording
 
 
-def get_release_by_id(mbid):
+def get_release_by_mbid(mbid, includes=None):
     """Get release with the MusicBrainz ID.
     Args:
         mbid (uuid): MBID(gid) of the release.
+        includes (list): List of values to be included.
+                         For list of possible values see includes.py.
     Returns:
         Dictionary containing the release information.
     """
-    release = _get_release_by_id(mbid)
-    return release
+
+    if includes is None:
+        includes = []
+
+    return get_many_releases_by_mbid([mbid], includes).get(mbid)
 
 
-def _get_release_by_id(mbid):
-    return fetch_multiple_releases(
-        [mbid],
-        includes=['media', 'release-groups'],
-    ).get(mbid)
+def get_many_releases_by_mbid(mbids, includes=None):
+    """ Get multiple releases with MusicBrainz IDs. It fetches releases
+    using _fetch_multiple_releases.
+
+    Args:
+        mbids (list): list of uuid (MBID(gid)) of the releases.
+        includes (list): List of values to be included.
+                         For list of possible values see includes.py.
+    Returns:
+        Dictionary containing the releases information with MBIDs as keys.
+    """
+
+    if includes is None:
+        includes = []
+
+    return _fetch_multiple_releases(
+        mbids,
+        includes=includes,
+    )
 
 
-def fetch_multiple_releases(mbids, includes=None):
+def _fetch_multiple_releases(mbids, includes=None):
     """Get info related to multiple releases using their MusicBrainz IDs.
     Args:
         mbids (list): List of MBIDs of releases.
